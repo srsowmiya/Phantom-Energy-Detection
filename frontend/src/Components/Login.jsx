@@ -1,17 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { authAPI } from "../services/api";
+import { setAuthToken, setUser } from "../utils/auth";
 
 const Login = () => {
-  const navigate = useNavigate(); // ✅ MUST be inside the component
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+    setError(""); // Clear error on input change
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    // TODO: Add your backend login API here
-    console.log("Login clicked");
-
-    // If login success:
-    navigate("/dashboard");
+    try {
+      const response = await authAPI.login(formData.email, formData.password);
+      
+      if (response.success) {
+        // Store token and user data
+        setAuthToken(response.data.token);
+        setUser(response.data.user);
+        
+        // Navigate to dashboard
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Login failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -27,17 +58,27 @@ const Login = () => {
           Login
         </h1>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-500/20 border border-red-500 rounded-xl text-red-300 text-sm">
+            {error}
+          </div>
+        )}
+
         <div className="flex flex-col gap-5">
 
-          {/* Username */}
+          {/* Email */}
           <div className="flex flex-col">
-            <label className="mb-1 text-gray-400">Username or Email</label>
+            <label className="mb-1 text-gray-400">Email</label>
             <input
-              type="text"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
               className="p-3 bg-black/30 border border-[#2563EB] rounded-xl 
               focus:outline-none focus:ring-2 focus:ring-[#38BDF8] 
               placeholder-gray-500 text-gray-200"
-              placeholder="Enter username"
+              placeholder="Enter your email"
             />
           </div>
 
@@ -46,6 +87,10 @@ const Login = () => {
             <label className="mb-1 text-gray-400">Password</label>
             <input
               type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
               className="p-3 bg-black/30 border border-[#2563EB] rounded-xl 
               focus:outline-none focus:ring-2 focus:ring-[#38BDF8] 
               placeholder-gray-500 text-gray-200"
@@ -56,11 +101,12 @@ const Login = () => {
           {/* Login Button */}
           <button
             type="submit"
-            className="bg-[#2563EB] hover:bg-[#1E40AF] text-white py-3 rounded-xl 
+            disabled={loading}
+            className="bg-[#2563EB] hover:bg-[#1E40AF] disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-3 rounded-xl 
             transition-all shadow-[0_0_20px_rgba(37,99,235,0.6)] 
             hover:shadow-[0_0_30px_rgba(14,165,233,0.8)] font-semibold"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
 
           {/* Sign Up Link */}
