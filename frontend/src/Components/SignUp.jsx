@@ -47,13 +47,15 @@ const Signup = () => {
         formData.password
       );
       
-      if (response.success) {
+      if (response.success && response.data) {
         // Store token and user data
         setAuthToken(response.data.token);
         setUser(response.data.user);
         
         // Navigate to dashboard
         navigate("/dashboard");
+      } else {
+        setError(response.message || "Registration failed. Please try again.");
       }
     } catch (err) {
       setError(

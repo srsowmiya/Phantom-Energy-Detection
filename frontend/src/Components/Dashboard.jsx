@@ -10,6 +10,13 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      // Try to get user from localStorage first for immediate display
+      const localUser = getUser();
+      if (localUser) {
+        setUser(localUser);
+      }
+
+      // Then fetch fresh data from API
       try {
         const response = await authAPI.getMe();
         if (response.success) {
@@ -17,21 +24,18 @@ const Dashboard = () => {
         }
       } catch (error) {
         console.error('Error fetching user:', error);
+        // If API call fails and no local user, redirect to login
+        if (!localUser) {
+          clearAuth();
+          navigate('/login');
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    // Try to get user from localStorage first
-    const localUser = getUser();
-    if (localUser) {
-      setUser(localUser);
-      setLoading(false);
-    }
-
-    // Then fetch fresh data from API
     fetchUser();
-  }, []);
+  }, [navigate]);
 
   const handleLogout = () => {
     clearAuth();
