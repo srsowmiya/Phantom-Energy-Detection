@@ -30,19 +30,19 @@ A comprehensive analytical report page with bar charts, pie charts, line charts,
 **Backend:**
 ```bash
 cd Backend
-npm install openai
+npm install @google/generative-ai
 ```
 
 **Frontend:**
 Already has recharts installed ✅
 
-### Step 2: Configure OpenAI API Key
+### Step 2: Configure Google Gemini API Key
 
-1. Get API key from [OpenAI Platform](https://platform.openai.com/)
+1. Get API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
 2. Create/update `Backend/.env` file:
    ```env
-   OPENAI_API_KEY=your_api_key_here
-   OPENAI_MODEL=gpt-3.5-turbo
+   GEMINI_API_KEY=your_gemini_api_key_here
+   GEMINI_MODEL=gemini-pro
    ```
 3. Restart backend server
 
@@ -104,13 +104,13 @@ Already has recharts installed ✅
 
 1. **Data Collection**: Backend gathers analytics data for the user
 2. **Data Summary**: Creates a structured summary of key metrics
-3. **LLM Prompt**: Sends data to OpenAI with expert prompt
-4. **AI Analysis**: OpenAI generates humanized insights
+3. **LLM Prompt**: Sends data to Google Gemini with expert prompt
+4. **AI Analysis**: Gemini generates humanized insights
 5. **Display**: Frontend shows insights in a readable format
 
 ## Fallback Mode
 
-If OpenAI API key is not configured:
+If Gemini API key is not configured:
 - System uses built-in fallback insights generator
 - Still provides useful analysis
 - No API costs
@@ -122,7 +122,7 @@ If OpenAI API key is not configured:
 
 In `Backend/.env`:
 ```env
-OPENAI_MODEL=gpt-4  # For better quality (more expensive)
+GEMINI_MODEL=gemini-1.5-pro  # For better quality (if available)
 ```
 
 ### Adjust Insight Length
@@ -146,8 +146,8 @@ Edit the prompt in `insightsController.js` to change the analysis style.
 ## Troubleshooting
 
 ### No AI Insights Showing
-- Check if `OPENAI_API_KEY` is set in `.env`
-- Verify API key is valid
+- Check if `GEMINI_API_KEY` is set in `.env`
+- Verify API key is valid from Google AI Studio
 - Check backend console for errors
 - System will use fallback if API fails
 
@@ -157,22 +157,22 @@ Edit the prompt in `insightsController.js` to change the analysis style.
 - Ensure ports and devices are configured
 
 ### API Errors
-- Check OpenAI API key validity
-- Verify account has credits
-- Check rate limits
+- Check Gemini API key validity from Google AI Studio
+- Verify API is enabled in Google Cloud project
+- Check rate limits (60 requests/min on free tier)
 - Review backend console logs
 
 ## Cost Estimation
 
-- **GPT-3.5-turbo**: ~$0.001 per insight generation
-- **GPT-4**: ~$0.01 per insight generation
-- Very affordable for regular use
+- **Gemini Pro**: Free tier available (60 requests/min)
+- **No credit card required** for free tier
+- Very affordable and accessible
 
 ## Next Steps
 
-1. Configure OpenAI API key
-2. Test the analytics report page
-3. Customize AI prompt if needed
-4. Monitor API usage and costs
-5. Adjust model based on quality needs
+1. Get Gemini API key from Google AI Studio
+2. Configure in `Backend/.env` file
+3. Test the analytics report page
+4. Customize AI prompt if needed
+5. Monitor API usage (free tier available)
 

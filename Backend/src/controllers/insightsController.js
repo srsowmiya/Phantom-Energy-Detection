@@ -4,12 +4,12 @@ const Port = require('../models/Port');
 const Device = require('../models/Device');
 const { Op } = require('sequelize');
 
-// Initialize OpenAI (supports OpenAI API)
-let OpenAI;
+// Initialize Google Gemini (supports Google Generative AI)
+let GoogleGenerativeAI;
 try {
-  OpenAI = require('openai');
+  GoogleGenerativeAI = require('@google/generative-ai');
 } catch (error) {
-  console.warn('OpenAI package not installed. LLM features will be disabled.');
+  console.warn('Google Generative AI package not installed. LLM features will be disabled.');
 }
 
 // @desc    Get AI-powered insights from analytics data
@@ -126,12 +126,13 @@ const getInsights = async (req, res) => {
 
     // Generate LLM insights if API key is configured
     let aiInsights = null;
-    const openaiApiKey = process.env.OPENAI_API_KEY;
+    const geminiApiKey = process.env.GEMINI_API_KEY;
 
-    if (openaiApiKey && OpenAI) {
+    if (geminiApiKey && GoogleGenerativeAI) {
       try {
-        const openai = new OpenAI({
-          apiKey: openaiApiKey
+        const genAI = new GoogleGenerativeAI(geminiApiKey);
+        const model = genAI.getGenerativeModel({ 
+          model: process.env.GEMINI_MODEL || 'gemini-pro' 
         });
 
         const prompt = `You are an energy efficiency expert analyzing phantom energy consumption data. 
@@ -157,27 +158,13 @@ Data Summary:
 Top Phantom Energy Ports:
 ${analyticsSummary.topPhantomPorts.map((p, i) => `${i + 1}. ${p.portName}: ${p.count} events, $${p.totalSavedMoney.toFixed(2)} saved`).join('\n')}
 
-Provide a comprehensive, humanized analysis with specific recommendations. Keep it concise but informative (300-400 words).`;
+Provide a comprehensive, humanized analysis with specific recommendations. Keep it concise but informative (300-400 words). Format your response in a friendly, conversational tone with clear sections.`;
 
-        const completion = await openai.chat.completions.create({
-          model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an energy efficiency expert providing friendly, actionable advice about phantom energy consumption and energy savings.'
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          max_tokens: 500,
-          temperature: 0.7
-        });
-
-        aiInsights = completion.choices[0].message.content;
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        aiInsights = response.text();
       } catch (llmError) {
-        console.error('LLM API Error:', llmError);
+        console.error('Gemini API Error:', llmError);
         // Continue without LLM insights if API fails
         aiInsights = null;
       }
@@ -191,7 +178,7 @@ Provide a comprehensive, humanized analysis with specific recommendations. Keep 
       data: {
         analytics: analyticsSummary,
         insights: aiInsights,
-        hasLLM: !!openaiApiKey && !!OpenAI
+        hasLLM: !!geminiApiKey && !!GoogleGenerativeAI
       }
     });
   } catch (error) {
