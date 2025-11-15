@@ -23,6 +23,7 @@ const Layout = ({ children }) => {
     { path: '/readings', label: 'Readings', icon: '📈' },
     { path: '/schedules', label: 'Schedules', icon: '⏰' },
     { path: '/notifications', label: 'Notifications', icon: '🔔' },
+    { path: '/analytics', label: 'Analytics', icon: '📊' },
     { path: '/reports', label: 'Reports', icon: '📄' },
   ];
 

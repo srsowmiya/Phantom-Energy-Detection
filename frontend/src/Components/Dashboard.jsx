@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../services/api';
-import { devicesAPI, portsAPI, notificationsAPI, readingsAPI } from '../services/api';
+import { devicesAPI, portsAPI, notificationsAPI} from '../services/api';
 import { getUser, clearAuth } from '../utils/auth';
 import Layout from './Layout';
 

@@ -9,6 +9,7 @@ import Ports from "./Components/Ports";
 import Readings from "./Components/Readings";
 import Schedules from "./Components/Schedules";
 import Notifications from "./Components/Notifications";
+import Analytics from "./Components/Analytics";
 import Reports from "./Components/Reports";
 import ProtectedRoute from "./Components/ProtectedRoute";
 
@@ -64,6 +65,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Notifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Analytics />
             </ProtectedRoute>
           }
         />

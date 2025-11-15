@@ -206,5 +206,17 @@ export const reportsAPI = {
   },
 };
 
+// Analytics API
+export const analyticsAPI = {
+  getAnalytics: async (days = 30, startDate, endDate) => {
+    const params = {};
+    if (days) params.days = days;
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    const response = await api.get('/analytics', { params });
+    return response.data;
+  },
+};
+
 export default api;
 

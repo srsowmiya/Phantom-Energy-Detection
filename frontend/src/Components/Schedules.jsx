@@ -53,10 +53,16 @@ const Schedules = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Convert days array to comma-separated string for API
+      const daysString = Array.isArray(formData.days) ? formData.days.join(',') : formData.days;
+      
       if (editingSchedule) {
-        await schedulesAPI.updateSchedule(editingSchedule.id, formData);
+        await schedulesAPI.updateSchedule(editingSchedule.id, {
+          ...formData,
+          days: daysString
+        });
       } else {
-        await schedulesAPI.createSchedule(formData.port, formData.start_time, formData.end_time, formData.days, formData.is_active);
+        await schedulesAPI.createSchedule(formData.port, formData.start_time, formData.end_time, daysString, formData.is_active);
       }
       setShowModal(false);
       setEditingSchedule(null);
@@ -69,11 +75,19 @@ const Schedules = () => {
 
   const handleEdit = (schedule) => {
     setEditingSchedule(schedule);
+    // Handle days as string (from DB) or array
+    let daysArray = [];
+    if (Array.isArray(schedule.days)) {
+      daysArray = schedule.days;
+    } else if (typeof schedule.days === 'string') {
+      daysArray = schedule.days.split(',').map(d => d.trim());
+    }
+    
     setFormData({
       port: schedule.portId,
       start_time: schedule.start_time,
       end_time: schedule.end_time,
-      days: Array.isArray(schedule.days) ? schedule.days : [],
+      days: daysArray,
       is_active: schedule.is_active
     });
     setShowModal(true);
@@ -173,7 +187,13 @@ const Schedules = () => {
                 </h3>
                 <div className="space-y-2 text-sm text-gray-400 mb-4">
                   <p><span className="font-semibold text-gray-300">Time:</span> {schedule.start_time} - {schedule.end_time}</p>
-                  <p><span className="font-semibold text-gray-300">Days:</span> {Array.isArray(schedule.days) ? schedule.days.join(', ') : 'N/A'}</p>
+                  <p><span className="font-semibold text-gray-300">Days:</span> {
+                    Array.isArray(schedule.days) 
+                      ? schedule.days.join(', ') 
+                      : typeof schedule.days === 'string' 
+                        ? schedule.days.split(',').map(d => d.trim()).join(', ')
+                        : 'N/A'
+                  }</p>
                 </div>
                 <div className="flex space-x-2 mt-4">
                   <button
@@ -294,4 +314,5 @@ const Schedules = () => {
 };
 
 export default Schedules;
+
 

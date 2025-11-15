@@ -159,7 +159,7 @@ const updateSchedule = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.userId;
-    const { start_time, end_time, days, is_active } = req.body;
+    const { port, start_time, end_time, days, is_active } = req.body;
 
     const schedule = await Schedule.findOne({
       where: { id },
@@ -178,19 +178,46 @@ const updateSchedule = async (req, res) => {
       });
     }
 
+    // If port is being changed, verify new port belongs to user
+    if (port && port !== schedule.portId) {
+      const newPort = await Port.findOne({
+        where: { id: port, userId }
+      });
+
+      if (!newPort) {
+        return res.status(404).json({
+          success: false,
+          message: 'Port not found or does not belong to user'
+        });
+      }
+    }
+
     // Update fields
     const updateData = {};
+    if (port) updateData.portId = port;
     if (start_time) updateData.start_time = start_time;
     if (end_time) updateData.end_time = end_time;
-    if (days) updateData.days = days;
+    if (days) {
+      // Handle both array and string formats
+      updateData.days = Array.isArray(days) ? days.join(',') : days;
+    }
     if (is_active !== undefined) updateData.is_active = is_active;
 
     await schedule.update(updateData);
 
+    // Fetch updated schedule with relations
+    const updatedSchedule = await Schedule.findByPk(schedule.id, {
+      include: [{
+        model: Port,
+        as: 'portData',
+        attributes: ['id', 'name', 'type']
+      }]
+    });
+
     res.status(200).json({
       success: true,
       message: 'Schedule updated successfully',
-      data: { schedule }
+      data: { schedule: updatedSchedule }
     });
   } catch (error) {
     console.error('Update schedule error:', error);
