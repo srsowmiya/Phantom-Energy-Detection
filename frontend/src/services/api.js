@@ -216,6 +216,11 @@ export const analyticsAPI = {
     const response = await api.get('/analytics', { params });
     return response.data;
   },
+  
+  getInsights: async (days = 30, startDate, endDate) => {
+    const response = await api.post('/analytics/insights', { days, startDate, endDate });
+    return response.data;
+  },
 };
 
 export default api;

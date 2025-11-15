@@ -24,6 +24,7 @@ const Layout = ({ children }) => {
     { path: '/schedules', label: 'Schedules', icon: '⏰' },
     { path: '/notifications', label: 'Notifications', icon: '🔔' },
     { path: '/analytics', label: 'Analytics', icon: '📊' },
+    { path: '/analytics-report', label: 'AI Report', icon: '🤖' },
     { path: '/reports', label: 'Reports', icon: '📄' },
   ];
 
