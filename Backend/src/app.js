@@ -12,6 +12,7 @@ const portRoutes = require('./routes/portRoutes');
 const readingRoutes = require('./routes/readingRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
+const reportRoutes = require('./routes/reportRoutes');
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use('/api/ports', portRoutes);
 app.use('/api/readings', readingRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/schedules', scheduleRoutes);
+app.use('/api/reports', reportRoutes);
 
 // 404 handler
 app.use((req, res) => {
